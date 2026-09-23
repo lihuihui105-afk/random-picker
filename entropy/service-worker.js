@@ -1,4 +1,4 @@
-const CACHE = 'entropy-mobile-v1';
+const CACHE = 'entropy-mobile-v11';
 const SHELL = [
   './',
   './index.html',

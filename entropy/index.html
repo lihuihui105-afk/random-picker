@@ -262,6 +262,78 @@ body::before {
 .tag:hover { background: rgba(29,78,216,0.13); border-color: rgba(29,78,216,0.35); }
 .tag.elim { opacity: 0.38; text-decoration: line-through; filter: grayscale(1); background: var(--surface2); border-color: var(--line2); color: var(--text3); }
 .tag.elim:hover { opacity: 0.6; }
+
+/* color grouping */
+.tag.color-blue   { background:rgba(29,78,216,.10); border-color:rgba(29,78,216,.36); color:#1D4ED8; }
+.tag.color-green  { background:rgba(5,150,105,.10); border-color:rgba(5,150,105,.34); color:#047857; }
+.tag.color-amber  { background:rgba(217,119,6,.10); border-color:rgba(217,119,6,.36); color:#B45309; }
+.tag.color-red    { background:rgba(220,38,38,.09); border-color:rgba(220,38,38,.30); color:#B91C1C; }
+.tag.color-purple { background:rgba(124,58,237,.09); border-color:rgba(124,58,237,.30); color:#6D28D9; }
+
+.color-tools {
+  display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+  margin:10px 0 12px;
+}
+.color-tools-label, .color-filter-hint {
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px; color:var(--text3);
+}
+.color-swatch, .color-filter-dot {
+  width:24px; height:24px; min-width:24px; padding:0;
+  border-radius:50%;
+  border:2px solid rgba(15,30,60,.10);
+  cursor:pointer;
+  box-shadow:0 0 0 1px rgba(255,255,255,.75) inset;
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.color-swatch:hover, .color-filter-dot:hover { transform:translateY(-1px); }
+.color-swatch.active, .color-filter-dot.active {
+  box-shadow:0 0 0 2px var(--surface), 0 0 0 4px rgba(29,78,216,.32);
+  border-color:rgba(15,30,60,.20);
+}
+.color-blue   { background:#3B82F6; }
+.color-green  { background:#10B981; }
+.color-amber  { background:#F59E0B; }
+.color-red    { background:#EF4444; }
+.color-purple { background:#8B5CF6; }
+
+.color-clear, .color-done, .color-filter-all, .color-filter-none {
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid var(--line2);
+  background:var(--surface2);
+  color:var(--text2);
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px;
+  cursor:pointer;
+}
+.color-clear.active, .color-filter-all.active, .color-filter-none.active {
+  border-color:rgba(29,78,216,.45);
+  background:rgba(29,78,216,.08);
+  color:#1D4ED8;
+}
+.color-done { display:none; }
+.color-done.show { display:inline-flex; }
+
+.color-mode-hint {
+  width:100%;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:11px; color:var(--text3);
+  min-height:16px;
+}
+.color-mode-hint.active { color:var(--text2); }
+
+.color-filter-row {
+  display:flex; gap:7px; align-items:center; flex-wrap:wrap;
+}
+.color-filter-dot {
+  width:22px; height:22px; min-width:22px;
+}
+.color-filter-none {
+  width:24px; height:24px; min-width:24px; padding:0;
+  border-radius:50%; background:transparent;
+}
+
 .tag-del {
   background: none; border: none; cursor: pointer;
   color: rgba(29,78,216,0.3); font-size: 17px; line-height: 1;
@@ -797,9 +869,20 @@ details summary:hover { color: var(--text); }
         <input type="text" id="new-item" placeholder="输入选项，按 Enter 添加" maxlength="80">
         <button class="btn-primary" onclick="addOne()">添加</button>
       </div>
+      <div class="color-tools" id="color-tools">
+        <span class="color-tools-label">颜色分组</span>
+        <button class="color-swatch color-blue" data-assign-color="blue" onclick="setColorAssignMode('blue')" title="蓝色组" aria-label="蓝色组"></button>
+        <button class="color-swatch color-green" data-assign-color="green" onclick="setColorAssignMode('green')" title="绿色组" aria-label="绿色组"></button>
+        <button class="color-swatch color-amber" data-assign-color="amber" onclick="setColorAssignMode('amber')" title="黄色组" aria-label="黄色组"></button>
+        <button class="color-swatch color-red" data-assign-color="red" onclick="setColorAssignMode('red')" title="红色组" aria-label="红色组"></button>
+        <button class="color-swatch color-purple" data-assign-color="purple" onclick="setColorAssignMode('purple')" title="紫色组" aria-label="紫色组"></button>
+        <button class="color-clear" id="color-clear-btn" onclick="setColorAssignMode('none')">清除颜色</button>
+        <button class="color-done" id="color-done-btn" onclick="setColorAssignMode(null)">完成</button>
+        <div class="color-mode-hint" id="color-mode-hint">选一个颜色，再点击标签即可分组。</div>
+      </div>
       <div id="tags-area"><span class="empty-tag">还没有选项 — 先添加几个吧</span></div>
       <div style="font-size:11px;color:var(--text3);margin-top:8px;font-family:'IBM Plex Sans',sans-serif;">
-        点文字可划掉 / 恢复 &nbsp;·&nbsp; 电脑悬停、手机长按看添加时间 &nbsp;·&nbsp; 点 ⧉ 复制 &nbsp;·&nbsp; 点 × 删除
+        平时点文字可划掉 / 恢复 &nbsp;·&nbsp; 选颜色后点标签即可分组 &nbsp;·&nbsp; 电脑悬停、手机长按看添加时间 &nbsp;·&nbsp; 点 ⧉ 复制
       </div>
       <div class="counter-row">
         <span><b id="p-cnt">0</b> 个选项 &nbsp;·&nbsp; <b id="p-elim">0</b> 个已划掉</span>
@@ -829,6 +912,19 @@ details summary:hover { color: var(--text); }
           <button class="toggle-btn on" id="t-norepeat" onclick="setRepeat(false)">不重复</button>
           <button class="toggle-btn" id="t-repeat" onclick="setRepeat(true)">可重复</button>
         </div>
+      </div>
+      <div class="cfg-row">
+        <span class="cfg-label">抽取范围</span>
+        <div class="color-filter-row">
+          <button class="color-filter-all active" id="color-filter-all" onclick="clearPickColorFilters()">全部</button>
+          <button class="color-filter-dot color-blue" data-filter-color="blue" onclick="togglePickColorFilter('blue')" title="蓝色组" aria-label="蓝色组"></button>
+          <button class="color-filter-dot color-green" data-filter-color="green" onclick="togglePickColorFilter('green')" title="绿色组" aria-label="绿色组"></button>
+          <button class="color-filter-dot color-amber" data-filter-color="amber" onclick="togglePickColorFilter('amber')" title="黄色组" aria-label="黄色组"></button>
+          <button class="color-filter-dot color-red" data-filter-color="red" onclick="togglePickColorFilter('red')" title="红色组" aria-label="红色组"></button>
+          <button class="color-filter-dot color-purple" data-filter-color="purple" onclick="togglePickColorFilter('purple')" title="紫色组" aria-label="紫色组"></button>
+          <button class="color-filter-none" id="color-filter-none" onclick="togglePickColorFilter('none')" title="未分组" aria-label="未分组">○</button>
+        </div>
+        <span class="color-filter-hint" id="color-filter-hint">全部颜色</span>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
         <button class="sm-btn" id="elim-btn" onclick="toggleElim()">划掉模式</button>
@@ -1025,6 +1121,8 @@ let genHistory = [];
 let genMode = 'int';
 let genSortMode = 'none';
 let lastIntegerDrawContext = null;
+let colorAssignMode = null;
+let pickColorFilters = new Set();
 
 /* ── helpers ── */
 function uid() { const a=new Uint32Array(2); crypto.getRandomValues(a); return a[0].toString(36)+a[1].toString(36); }
@@ -1035,9 +1133,17 @@ function getElim() { const g=activeGroup(); return g?new Set(g.elim):new Set(); 
 
 function normalizeGroupMeta(g) {
   if (!g || !Array.isArray(g.items)) return;
+
   if (!Array.isArray(g.addedAt)) g.addedAt = [];
   while (g.addedAt.length < g.items.length) g.addedAt.push(null);
   if (g.addedAt.length > g.items.length) g.addedAt = g.addedAt.slice(0, g.items.length);
+
+  if (!Array.isArray(g.colors)) g.colors = [];
+  while (g.colors.length < g.items.length) g.colors.push(null);
+  if (g.colors.length > g.items.length) g.colors = g.colors.slice(0, g.items.length);
+
+  const valid = new Set(['blue','green','amber','red','purple']);
+  g.colors = g.colors.map(c => valid.has(c) ? c : null);
 }
 
 function formatAddedAt(ts) {
@@ -1086,7 +1192,7 @@ function handleTagTextClick(e, i) {
     tagHoldTriggered = false;
     return;
   }
-  toggleElimItem(i);
+  handleTagClick(e, i);
 }
 
 function showMobileOnboarding() {
@@ -1114,7 +1220,7 @@ function loadAll() {
   groups.forEach(normalizeGroupMeta);
 
   if (!groups.length) {
-    groups = [{ id: uid(), name: '默认清单', items: [], elim: [], history: [], addedAt: [] }];
+    groups = [{ id: uid(), name: '默认清单', items: [], elim: [], history: [], addedAt: [], colors: [] }];
   }
 
   if (!groups.find(g=>g.id===activeId)) activeId = groups[0].id;
@@ -1159,6 +1265,7 @@ function renderGroups() {
 function switchGroup(id) {
   activeId = id;
   elimMode = false;
+  colorAssignMode = null;
   document.getElementById('elim-btn').classList.remove('on');
   saveGroups(); renderGroups(); renderActiveGroup();
   document.getElementById('pick-result').style.display='none';
@@ -1166,7 +1273,7 @@ function switchGroup(id) {
 }
 
 function addGroup() {
-  const g = { id: uid(), name: '新清单', items: [], elim: [], history: [], addedAt: [] };
+  const g = { id: uid(), name: '新清单', items: [], elim: [], history: [], addedAt: [], colors: [] };
   groups.push(g);
   activeId = g.id;
   saveGroups(); renderGroups(); renderActiveGroup();
@@ -1194,7 +1301,7 @@ function renderActiveGroup() {
   // update title input
   const titleInp = document.getElementById('active-group-title');
   if(titleInp) titleInp.value = g ? g.name : '';
-  renderTags(); updatePickCounts(); renderPickHist();
+  renderTags(); updatePickCounts(); renderPickHist(); updateColorUI();
 }
 
 /* ════════ PICKER ════════ */
@@ -1212,8 +1319,10 @@ function renderTags() {
 
   a.innerHTML = items.map((t,i)=>{
     const e = elim.has(i);
+    const c = g.colors[i];
+    const colorClass = c ? ` color-${c}` : '';
     const addedLabel = formatAddedAt(g.addedAt[i]);
-    return `<span class="tag${e?' elim':''}" data-added-label="${esc(addedLabel)}" title="${esc(addedLabel)}">
+    return `<span class="tag${colorClass}${e?' elim':''}" data-added-label="${esc(addedLabel)}" title="${esc(addedLabel)}">
       <span class="tag-text"
         onclick="handleTagTextClick(event, ${i})"
         ontouchstart="startTagHold(${i})"
@@ -1227,13 +1336,138 @@ function renderTags() {
   }).join('');
 }
 
+
+function colorName(c) {
+  return ({blue:'蓝',green:'绿',amber:'黄',red:'红',purple:'紫',none:'未分组'})[c] || '';
+}
+
+function setColorAssignMode(mode) {
+  if (mode !== null && colorAssignMode === mode) mode = null;
+  colorAssignMode = mode;
+  updateColorUI();
+}
+
+function applyColorToItem(i) {
+  const g = activeGroup();
+  if (!g) return;
+  normalizeGroupMeta(g);
+
+  if (colorAssignMode === 'none') {
+    g.colors[i] = null;
+  } else if (colorAssignMode) {
+    g.colors[i] = (g.colors[i] === colorAssignMode) ? null : colorAssignMode;
+  } else {
+    return;
+  }
+
+  saveGroups();
+  renderTags();
+  updatePickCounts();
+}
+
+function handleTagClick(e, i) {
+  if (colorAssignMode !== null) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    applyColorToItem(i);
+    return;
+  }
+  toggleElimItem(i);
+}
+
+function updateColorUI() {
+  document.querySelectorAll('[data-assign-color]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.assignColor === colorAssignMode);
+  });
+
+  const clearBtn = document.getElementById('color-clear-btn');
+  if (clearBtn) clearBtn.classList.toggle('active', colorAssignMode === 'none');
+
+  const doneBtn = document.getElementById('color-done-btn');
+  if (doneBtn) doneBtn.classList.toggle('show', colorAssignMode !== null);
+
+  const hint = document.getElementById('color-mode-hint');
+  if (hint) {
+    if (colorAssignMode === null) {
+      hint.textContent = '选一个颜色，再点击标签即可分组。';
+      hint.classList.remove('active');
+    } else if (colorAssignMode === 'none') {
+      hint.textContent = '正在清除颜色：点击标签取消它的分组。';
+      hint.classList.add('active');
+    } else {
+      hint.textContent = `正在分组：${colorName(colorAssignMode)}色。点击标签加入；再点同色标签可取消。`;
+      hint.classList.add('active');
+    }
+  }
+
+  const allBtn = document.getElementById('color-filter-all');
+  if (allBtn) allBtn.classList.toggle('active', pickColorFilters.size === 0);
+
+  document.querySelectorAll('[data-filter-color]').forEach(btn=>{
+    btn.classList.toggle('active', pickColorFilters.has(btn.dataset.filterColor));
+  });
+
+  const noneBtn = document.getElementById('color-filter-none');
+  if (noneBtn) noneBtn.classList.toggle('active', pickColorFilters.has('none'));
+
+  const filterHint = document.getElementById('color-filter-hint');
+  if (filterHint) {
+    filterHint.textContent = pickColorFilters.size
+      ? '当前：' + [...pickColorFilters].map(colorName).join(' + ')
+      : '全部颜色';
+  }
+}
+
+function togglePickColorFilter(color) {
+  if (pickColorFilters.has(color)) pickColorFilters.delete(color);
+  else pickColorFilters.add(color);
+  updateColorUI();
+  updatePickCounts();
+  document.getElementById('pick-result').style.display='none';
+}
+
+function clearPickColorFilters() {
+  pickColorFilters.clear();
+  updateColorUI();
+  updatePickCounts();
+  document.getElementById('pick-result').style.display='none';
+}
+
+function itemMatchesColor(g, i) {
+  if (pickColorFilters.size === 0) return true;
+  normalizeGroupMeta(g);
+  const c = g.colors[i] || 'none';
+  return pickColorFilters.has(c);
+}
+
+function currentColorScopeLabel() {
+  return pickColorFilters.size
+    ? [...pickColorFilters].map(colorName).join('+')
+    : '全部';
+}
+
 function updatePickCounts() {
   const g = activeGroup();
-  const items = g?g.items:[];
-  const elim = g?new Set(g.elim):new Set();
+  const items = g ? g.items : [];
+  const elim = g ? new Set(g.elim) : new Set();
+
+  if (g) normalizeGroupMeta(g);
+
+  const scopeCount = g
+    ? g.items.reduce((n,_,i)=>n + (itemMatchesColor(g,i) ? 1 : 0), 0)
+    : 0;
+
   document.getElementById('p-cnt').textContent = items.length;
   document.getElementById('p-elim').textContent = elim.size;
-  document.getElementById('pick-btn').disabled = items.length === 0;
+  document.getElementById('pick-btn').disabled = items.length === 0 || scopeCount === 0;
+
+  const hint = document.getElementById('color-filter-hint');
+  if (hint) {
+    const scope = currentColorScopeLabel();
+    hint.textContent = `${scope} · ${scopeCount} 项`;
+  }
 }
 
 function addOne() {
@@ -1248,6 +1482,7 @@ function addOne() {
   if (!g.items.includes(v)) {
     g.items.push(v);
     g.addedAt.push(new Date().toISOString());
+    g.colors.push(null);
     saveGroups();
     renderTags();
     updatePickCounts();
@@ -1265,6 +1500,7 @@ function removeItem(i) {
   g.elim = g.elim.filter(e=>e!==i).map(e=>e>i?e-1:e);
   g.items.splice(i,1);
   g.addedAt.splice(i,1);
+  g.colors.splice(i,1);
 
   saveGroups();
   renderTags();
@@ -1274,7 +1510,7 @@ function removeItem(i) {
 function clearAllItems() {
   if (!confirm('确定要清空本清单所有选项吗？')) return;
   const g = activeGroup(); if(!g) return;
-  g.items=[]; g.elim=[]; g.history=[]; g.addedAt=[];
+  g.items=[]; g.elim=[]; g.history=[]; g.addedAt=[]; g.colors=[];
   saveGroups(); renderTags(); updatePickCounts();
   document.getElementById('pick-result').style.display='none';
   document.getElementById('pick-hist-card').style.display='none';
@@ -1292,6 +1528,7 @@ function importItems() {
     if(!g.items.includes(l)) {
       g.items.push(l);
       g.addedAt.push(stamp);
+      g.colors.push(null);
     }
   });
 
@@ -1308,11 +1545,13 @@ function loadPreset() {
   g.items=[];
   g.elim=[];
   g.addedAt=[];
+  g.colors=[];
 
   const stamp = new Date().toISOString();
   for(let i=1;i<=20;i++) {
     g.items.push('选项 '+i);
     g.addedAt.push(stamp);
+    g.colors.push(null);
   }
 
   saveGroups();
@@ -1362,33 +1601,85 @@ function copyTagText(text, btn) {
 function doPick() {
   const btn=document.getElementById('pick-btn');
   btn.innerHTML='<span><span class="spin">◌</span></span>'; btn.disabled=true;
+
   setTimeout(()=>{
-    const g=activeGroup(); if(!g){btn.innerHTML='<span>决定吧 —</span>';btn.disabled=false;return;}
-    const elim=new Set(g.elim);
-    const pool=allowRepeat
-      ? g.items.map((t,i)=>({t,i}))
-      : g.items.map((t,i)=>({t,i})).filter(o=>!elim.has(o.i));
-    if(!pool.length){
-      btn.innerHTML='<span>决定吧 —</span>';btn.disabled=false;
-      alert('没有可选项了！请先恢复被划掉的选项。');return;
+    const g=activeGroup();
+    if(!g){
+      btn.innerHTML='<span>决定吧 —</span>';
+      btn.disabled=false;
+      return;
     }
-    const n=Math.min(parseInt(document.getElementById('pick-n').value)||1,pool.length);
+
+    normalizeGroupMeta(g);
+
+    const elim=new Set(g.elim);
+    const scoped=g.items
+      .map((t,i)=>({t,i,color:g.colors[i]||null}))
+      .filter(o=>itemMatchesColor(g,o.i));
+
+    const pool=allowRepeat
+      ? scoped
+      : scoped.filter(o=>!elim.has(o.i));
+
+    if(!pool.length){
+      btn.innerHTML='<span>决定吧 —</span>';
+      btn.disabled=false;
+      alert(pickColorFilters.size
+        ? '当前颜色范围没有可抽取的选项。可以换一个颜色范围，或恢复被划掉的选项。'
+        : '没有可选项了！请先恢复被划掉的选项。');
+      return;
+    }
+
+    const requested=parseInt(document.getElementById('pick-n').value)||1;
+    const n=allowRepeat ? Math.max(requested,1) : Math.min(Math.max(requested,1),pool.length);
+
     const chosen=allowRepeat
-      ?Array.from({length:n},()=>pool[rInt(pool.length)])
-      :shuffle(pool).slice(0,n);
+      ? Array.from({length:n},()=>pool[rInt(pool.length)])
+      : shuffle(pool).slice(0,n);
+
     const names=chosen.map(o=>o.t);
-    if(elimMode&&!allowRepeat){chosen.forEach(o=>g.elim.push(o.i));renderTags();}
-    const rem=allowRepeat?g.items.length:g.items.filter((_,i)=>!new Set(g.elim).has(i)).length;
+
+    if(elimMode&&!allowRepeat){
+      chosen.forEach(o=>{
+        if(!g.elim.includes(o.i)) g.elim.push(o.i);
+      });
+      renderTags();
+    }
+
+    const currentElim=new Set(g.elim);
+    const rem=allowRepeat
+      ? scoped.length
+      : scoped.filter(o=>!currentElim.has(o.i)).length;
+
     document.getElementById('pick-display').textContent=names.join('  /  ');
     document.getElementById('pick-pills').innerHTML=
-      `<span class="pill">${n===1?'中选':'选出 '+n+' 个'}</span><span class="pill">剩 ${rem} 个可选</span><span class="pill">${esc(g.name)} · 共 ${g.items.length} 项</span>`;
+      `<span class="pill">${n===1?'中选':'选出 '+n+' 个'}</span>` +
+      `<span class="pill">范围：${esc(currentColorScopeLabel())}</span>` +
+      `<span class="pill">剩 ${rem} 个可选</span>` +
+      `<span class="pill">${esc(g.name)} · 共 ${g.items.length} 项</span>`;
+
     document.getElementById('pick-result').style.display='';
-    const now=new Date().toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+
+    const now=new Date().toLocaleString('zh-CN',{
+      month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'
+    });
+
     if(!g.history) g.history=[];
-    g.history.unshift({time:now,result:names.join(' / '),n});
+    g.history.unshift({
+      time:now,
+      result:names.join(' / '),
+      n,
+      scope:currentColorScopeLabel()
+    });
+
     if(g.history.length>12) g.history.pop();
-    saveGroups(); renderPickHist();
-    btn.innerHTML='<span>再决定一次 —</span>';btn.disabled=false;
+
+    saveGroups();
+    renderPickHist();
+    updatePickCounts();
+
+    btn.innerHTML='<span>再决定一次 —</span>';
+    btn.disabled=false;
   },300);
 }
 
@@ -2047,6 +2338,7 @@ loadAll();
 renderGroups();
 renderActiveGroup();
 renderGenHist();
+updateColorUI();
 setSortMode('none');
 setGenMode('int');
 showLastBackupStatus();
